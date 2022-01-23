@@ -1,14 +1,15 @@
 import dotenv from 'dotenv';
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+const isDev = ['development', 'dev'].includes(process.env.NODE_ENV);
 
 const envFound = dotenv.config();
-if (envFound.error) {
+if (isDev && envFound.error) {
     throw new Error('Env file required');
 }
 
 export default {
-    isDev: ['development', 'dev'].includes(process.env.NODE_ENV),
+    isDev,
     env: process.env.NODE_ENV,
     port: process.env.PORT || 9000,
     databaseURL: process.env.MONGODB_URL as string,
