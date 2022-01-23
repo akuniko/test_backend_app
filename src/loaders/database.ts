@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import config from '../config/config';
 
-export default async (): void => {
+export default async (): Promise<void> => {
     console.log('Database connecting');
     await mongoose
         .connect(config.databaseURL, {
