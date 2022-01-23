@@ -16,7 +16,7 @@
 - [x] add prettier
 - [x] add ESlint
 - [ ] add formatting before a commit eg. Husky
-- [] add tests eg. jest
+- [ ] add tests eg. jest
 - [ ] add logger eg. Winston
 - [ ] add request log eg. Morgan
 - [ ] add CI/CD scripts
