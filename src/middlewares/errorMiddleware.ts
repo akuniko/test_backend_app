@@ -30,7 +30,9 @@ export const errorHandler = (
             stack: generalError.causeError.stack
         };
     }
-
+    if (generalError.causeError) {
+        console.error(generalError.causeError);
+    }
     console.error(err);
     res.status(generalError.status).json(responseBody);
 };
