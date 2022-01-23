@@ -1,0 +1,6 @@
+/.env
+/node_modules/
+/.idea/.name
+/.idea/modules.xml
+/.idea/prettier.xml
+/.idea/test_backend_app.iml
