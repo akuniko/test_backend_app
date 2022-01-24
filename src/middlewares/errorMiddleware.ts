@@ -1,10 +1,11 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import config from '../config/config';
 
 export const errorHandler = (
     err: TypeError,
     req: Request,
     res: Response,
+    next: NextFunction
 ) => {
     let customError = err;
 
@@ -21,8 +22,11 @@ export const errorHandler = (
     const responseBody: any = {
         message: generalError.message,
         errorCode: generalError.errorCode,
-        errors: generalError.errors
     };
+
+    if (generalError.errors.length) {
+        responseBody.errors = generalError.errors;
+    }
     if (config.isDev && generalError.causeError) {
         responseBody.causeError = {
             name: generalError.causeError.name,

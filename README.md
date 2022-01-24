@@ -11,6 +11,20 @@
 
 # Description
 
+App has 4 endpoints:
+
+- POST /api/auth/signup with body `{ username, password }`--> create new unique user and return jwt
+- POST /api/auth/login with body `{ username, password }` --> authenticate user and return jwt
+- GET /api/articles --> returns list of articles scrapped from economist website
+- GET /api/articles/:base64Url --> returns article details
+
+## Dependencies
+
+- express web framework for node
+- mongoDB to persistence user credentials
+- puppeteer to scrapped articles
+- passport to handle authorization
+
 # TODO
 
 - [x] add prettier
@@ -21,3 +35,5 @@
 - [ ] add request log eg. Morgan
 - [ ] add CI/CD scripts
 - [ ] add cache for articles
+- [ ] add docker to be able to run app out of the box with db
+- [ ] add API docs eg. swagger
