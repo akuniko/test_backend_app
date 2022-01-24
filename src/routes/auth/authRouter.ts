@@ -1,29 +1,30 @@
-import express, {Request, Response} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import passport from 'passport';
 import {createTokenForUser} from '../../auth/jwtStrategy';
 import User from '../../models/User';
 import {validateBody} from '../../middlewares/validatorMiddleware';
 import {loginValidator, signUpValidator} from './authValidator';
+import {GeneralError} from "../../middlewares/errorMiddleware";
 
 export const authRouter = express.Router();
 
 authRouter.post(
     '/login',
     validateBody(loginValidator),
-    async (req: Request, res: Response) => {
+    async (req: Request, res: Response, next: NextFunction) => {
         passport.authenticate('local', {session: false}, (err, user) => {
-            if (err || !user) {
-                return res.status(400).json({
-                    message: 'Something is not right',
-                    user: false
-                });
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                throw new AuthenticationError('Wrong username or password');
             }
             req.login(user, {session: false}, async (err) => {
                 if (err) {
-                    res.send(err);
+                    return next(err)
                 }
                 const token = await createTokenForUser(user.id);
-                return res.json({ user, token });
+                return res.json({user, token});
             });
         })(req, res);
     }
@@ -44,8 +45,14 @@ authRouter.post(
                 }
                 // @ts-ignore
                 const token = await createTokenForUser(user.id);
-                return res.status(200).send({ token: token });
+                return res.status(200).send({token: token});
             }
         );
     }
 );
+
+class AuthenticationError extends GeneralError {
+    constructor(msg: string) {
+        super(null, msg, 400, "AUTHENTICATION_ERROR");
+    }
+}
