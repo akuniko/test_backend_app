@@ -1,14 +1,14 @@
 import {NextFunction, Request, Response} from 'express';
-import {AnySchema, ValidationErrorItem} from 'joi';
+import {AnySchema, AsyncValidationOptions, ValidationErrorItem} from 'joi';
 import {GeneralError} from './errorMiddleware';
 
-export const validate = (validatorSchema: AnySchema) => {
+function validate(prop: 'body' | 'query', validatorSchema: AnySchema, options?: AsyncValidationOptions) {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
             await validatorSchema
-                .validateAsync(req.body, { abortEarly: false })
+                .validateAsync(req[prop], {abortEarly: false, ...options})
                 .then((val) => {
-                    req.body = val;
+                    req[prop] = val;
                     next();
                 })
                 .catch((err) => {
@@ -19,6 +19,14 @@ export const validate = (validatorSchema: AnySchema) => {
             next(err);
         }
     };
+}
+
+export const validateQuery = (validatorSchema: AnySchema) => {
+    return validate('query', validatorSchema);
+};
+
+export const validateBody = (validatorSchema: AnySchema) => {
+    return validate('body', validatorSchema);
 };
 
 class ValidationError extends GeneralError {

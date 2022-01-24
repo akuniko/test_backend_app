@@ -5,7 +5,6 @@ import {toBase64} from "js-base64";
 
 const BASIC_URL = 'https://www.economist.com';
 const ECONOMIST_ARTICLE_URL_REGEX = '/[\\w-]*/\\d{4}/\\d{2}/\\d{2}/[\\w-]*';
-const DEFAULT_LIMIT = 20;
 
 export class EconomistArticleService implements ArticleService {
     async getArticleDetails(url: string): Promise<FullArticle> {
@@ -49,7 +48,7 @@ export class EconomistArticleService implements ArticleService {
         } as FullArticle;
     }
 
-    async getArticles(limit: number = DEFAULT_LIMIT): Promise<Article[]> {
+    async getArticles(limit: number): Promise<Article[]> {
         console.log('Fetching articles from: ' + BASIC_URL);
 
         const browser = await puppeteerDefault()

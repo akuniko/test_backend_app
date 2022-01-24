@@ -2,23 +2,23 @@ import express, {Request, Response} from 'express';
 import passport from 'passport';
 import {createTokenForUser} from '../../auth/jwtStrategy';
 import User from '../../models/User';
-import {validate} from '../../middlewares/validatorMiddleware';
+import {validateBody} from '../../middlewares/validatorMiddleware';
 import {loginValidator, signUpValidator} from './authValidator';
 
 export const authRouter = express.Router();
 
 authRouter.post(
     '/login',
-    validate(loginValidator),
+    validateBody(loginValidator),
     async (req: Request, res: Response) => {
-        passport.authenticate('local', { session: false }, (err, user) => {
+        passport.authenticate('local', {session: false}, (err, user) => {
             if (err || !user) {
                 return res.status(400).json({
                     message: 'Something is not right',
                     user: false
                 });
             }
-            req.login(user, { session: false }, async (err) => {
+            req.login(user, {session: false}, async (err) => {
                 if (err) {
                     res.send(err);
                 }
@@ -31,16 +31,16 @@ authRouter.post(
 
 authRouter.post(
     '/signup',
-    validate(signUpValidator),
+    validateBody(signUpValidator),
     async (req: Request, res: Response) => {
-        const { username, password } = req.body;
+        const {username, password} = req.body;
         // @ts-ignore
         User.register(
-            new User({ username: username }),
+            new User({username: username}),
             password,
             async (err: TypeError, user: Express.User) => {
                 if (err) {
-                    return res.status(500).send({ error: err });
+                    return res.status(500).send({error: err});
                 }
                 // @ts-ignore
                 const token = await createTokenForUser(user.id);
