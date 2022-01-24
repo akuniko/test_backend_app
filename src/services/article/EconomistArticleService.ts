@@ -1,6 +1,6 @@
 import {Article, FullArticle} from '../../interfaces/Article';
-import puppeteer from 'puppeteer/lib/cjs/puppeteer/node-puppeteer-core';
 import {ArticleService} from './ArticleService';
+import {puppeteerDefault} from "../../lib/puppeteer";
 
 const BASIC_URL = 'https://www.economist.com';
 const ECONOMIST_ARTICLE_URL_REGEX = '/[\\w-]*/\\d{4}/\\d{2}/\\d{2}/[\\w-]*';
@@ -11,9 +11,9 @@ export class EconomistArticleService implements ArticleService {
         const fullUrl = BASIC_URL + url;
         console.log('Fetching article: ' + fullUrl);
 
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteerDefault();
         const page = await browser.newPage();
-        await page.goto(fullUrl, { waitUntil: 'domcontentloaded' });
+        await page.goto(fullUrl, {waitUntil: 'domcontentloaded'});
 
         const articleTitle = await page.$eval(
             'article.article header span.article__headline',
@@ -51,14 +51,11 @@ export class EconomistArticleService implements ArticleService {
     async getArticles(limit: number = DEFAULT_LIMIT): Promise<Article[]> {
         console.log('Fetching articles from: ' + BASIC_URL);
 
-        const browser = await puppeteer.launch({
-            headless: true,
-            devtools: false
-        });
+        const browser = await puppeteerDefault()
 
         const page = await browser.newPage();
 
-        await page.goto(BASIC_URL, { waitUntil: 'domcontentloaded' });
+        await page.goto(BASIC_URL, {waitUntil: 'domcontentloaded'});
 
         // typical economist link looks like this:
         // https://www.economist.com/middle-east-and-africa/2022/01/22/south-africa-the-worlds-coal-junkie-tries-to-quit
@@ -98,7 +95,7 @@ export class EconomistArticleService implements ArticleService {
                         } as Article;
                     });
             },
-            { regExp: ECONOMIST_ARTICLE_URL_REGEX, limit }
+            {regExp: ECONOMIST_ARTICLE_URL_REGEX, limit}
         );
 
         await browser.close();
