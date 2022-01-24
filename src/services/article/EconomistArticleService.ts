@@ -1,6 +1,7 @@
 import {Article, FullArticle} from '../../interfaces/Article';
 import {ArticleService} from './ArticleService';
 import {puppeteerDefault} from "../../lib/puppeteer";
+import {toBase64} from "js-base64";
 
 const BASIC_URL = 'https://www.economist.com';
 const ECONOMIST_ARTICLE_URL_REGEX = '/[\\w-]*/\\d{4}/\\d{2}/\\d{2}/[\\w-]*';
@@ -78,7 +79,7 @@ export class EconomistArticleService implements ArticleService {
                         return passed;
                     })
                     .map((link) => {
-                        const href = link.getAttribute('href');
+                        const href = link.getAttribute('href')!;
                         const title = link.textContent;
                         const parentHeader = link.parentElement;
                         const img = parentHeader?.parentElement
@@ -99,6 +100,9 @@ export class EconomistArticleService implements ArticleService {
         );
 
         await browser.close();
-        return allArticle;
+        return allArticle.map(a => ({
+            ...a,
+            encryptedUrl: toBase64(a.url, true),
+        }));
     }
 }
