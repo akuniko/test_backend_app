@@ -37,3 +37,4 @@ App has 4 endpoints:
 - [ ] add cache for articles
 - [ ] add docker to be able to run app out of the box with db
 - [ ] add API docs eg. swagger
+- [ ] if only front use API, make public endpoints more secure eg. API_KEY
