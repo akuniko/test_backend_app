@@ -1,6 +1,6 @@
 export interface Article {
     url: string;
-    encryptedUrl: string;
+    encodedUrl: string;
     title: string;
     img?: string;
     description?: string;

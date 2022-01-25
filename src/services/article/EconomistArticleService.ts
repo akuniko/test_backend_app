@@ -8,7 +8,7 @@ const ECONOMIST_ARTICLE_URL_REGEX = '/[\\w-]*/\\d{4}/\\d{2}/\\d{2}/[\\w-]*';
 
 export class EconomistArticleService implements ArticleService {
     async getArticleDetails(url: string): Promise<FullArticle> {
-        const fullUrl = BASIC_URL + url;
+        const fullUrl = this.stripBasicUrl(url);
         console.log('Fetching article: ' + fullUrl);
 
         const browser = await puppeteerDefault();
@@ -48,6 +48,13 @@ export class EconomistArticleService implements ArticleService {
         } as FullArticle;
     }
 
+    private stripBasicUrl(url: string) {
+        if (url.startsWith(BASIC_URL)) {
+            return url;
+        }
+        return BASIC_URL + url;
+    }
+
     async getArticles(limit: number): Promise<Article[]> {
         console.log('Fetching articles from: ' + BASIC_URL);
 
@@ -71,7 +78,14 @@ export class EconomistArticleService implements ArticleService {
                             return false;
                         }
                         const href = link.getAttribute('href');
-                        const passed = href && linkRegExp.test(href);
+                        if (!href) {
+                            return false
+                        }
+                        if (href.includes("/podcasts/")) {
+                            return false
+                        }
+
+                        const passed = linkRegExp.test(href);
                         if (passed) {
                             counter++;
                         }
@@ -101,7 +115,7 @@ export class EconomistArticleService implements ArticleService {
         await browser.close();
         return allArticle.map(a => ({
             ...a,
-            encryptedUrl: toBase64(a.url, true),
+            encodedUrl: toBase64(a.url, true),
         }));
     }
 }

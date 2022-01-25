@@ -24,7 +24,7 @@ authRouter.post(
                     return next(err)
                 }
                 const token = await createTokenForUser(user.id);
-                return res.json({user, token});
+                return res.json({username: user.username, token});
             });
         })(req, res);
     }
